@@ -40,5 +40,12 @@ class BoardStateSpec extends Specification {
         .updated(Point(1, 2), Point(2, 2), Some(false))
         .isInvalid must beTrue
     }
+
+    "be invalid when we have exceeded the target" in {
+      state.updated(Point(0, 1), Point(0, 2), Some(true))
+        .updated(Point(1, 1), Point(1, 2), Some(true))
+        .isInvalid must beTrue
+    }
+
   }
 }

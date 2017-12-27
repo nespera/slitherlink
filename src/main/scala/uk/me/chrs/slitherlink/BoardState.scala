@@ -3,7 +3,7 @@ package uk.me.chrs.slitherlink
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
   def isInvalid: Boolean = {
-    hasDeadEnd || hasBranch || cannotMakeTarget
+    hasDeadEnd || hasBranch || cannotMakeTarget || exceededTarget
   }
 
   override def toString: String = {
@@ -17,9 +17,14 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def cannotMakeTarget = {
-    val tuples = linesRoundSquares(true)
-    tuples.exists{
-      case (sq: Square, count: Int) => sq.target.exists(n => n > count)
+    linesRoundSquares(true).exists{
+      case (sq: Square, maxPossible: Int) => sq.target.exists(targetValue => targetValue > maxPossible)
+    }
+  }
+
+  private def exceededTarget = {
+    linesRoundSquares(false).exists{
+      case (sq: Square, minPossible: Int) => sq.target.exists(targetValue => minPossible > targetValue)
     }
   }
 
