@@ -10,11 +10,14 @@ package uk.me.chrs.slitherlink
 
  */
 
-class Board(height: Int, width: Int, targets: String) {
+class Board(val height: Int, val width: Int, targets: String) {
   if(targets.length != width * height) throw new IllegalArgumentException(s"Targets is of length ${targets.length}, expected ${width * height}")
   val squares: Set[Square] = (for { x <- 0 until height; y <- 0 until width } yield Square(x, y, targetAt(x,y))).toSet
   val points: Set[Point] = (for { x <- 0 to height; y <- 0 to width } yield Point(x, y)).toSet
   val segments: Set[Segment] = points.flatMap(p => points.filter(p.adjacent).map(Segment(p, _)))
+
+  def getRow(r: Int): Seq[Square] = squares.filter(_.x == r).toSeq.sortBy(_.y)
+
   private def targetAt(x: Int, y: Int): Option[Int] = {
     targets(x*width + y) match {
       case '0' => Some(0)
@@ -24,7 +27,6 @@ class Board(height: Int, width: Int, targets: String) {
       case '.' => None
       case c => throw  new IllegalArgumentException(s"Bad target character: $c")
     }
-
   }
 }
 
