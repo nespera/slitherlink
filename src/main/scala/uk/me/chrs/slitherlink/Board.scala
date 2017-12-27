@@ -12,7 +12,9 @@ case class Point(x: Int, y: Int){
     (x == other.x && Math.abs(y-other.y) == 1) || (y == other.y && Math.abs(x-other.x) == 1)
   }
 }
-case class Segment(points: Set[Point])
+case class Segment(points: Set[Point]){
+  if(points.size != 2) throw new IllegalArgumentException("Segment must have exactly two points")
+}
 object Segment{
   def apply(a: Point, b: Point): Segment = Segment(Set(a,b))
 }

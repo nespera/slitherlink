@@ -27,4 +27,12 @@ class BoardSpec extends Specification {
     }
   }
 
+  "A segment" should {
+    "have exactly two points" in {
+      Segment(Set()) must throwAn[IllegalArgumentException]
+      Segment(Set(Point(0,0))) must throwAn[IllegalArgumentException]
+      Segment(Set(Point(0,0), Point(0,1), Point(1,1))) must throwAn[IllegalArgumentException]
+    }
+  }
+
 }
