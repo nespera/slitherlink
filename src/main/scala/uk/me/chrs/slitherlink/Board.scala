@@ -18,6 +18,8 @@ class Board(val height: Int, val width: Int, targets: String) {
 
   def getRow(r: Int): Seq[Square] = squares.filter(_.x == r).toSeq.sortBy(_.y)
 
+  def segmentsFor(p: Point): Seq[Segment] = segments.filter(_.points.contains(p)).toSeq
+
   private def targetAt(x: Int, y: Int): Option[Int] = {
     targets(x*width + y) match {
       case '0' => Some(0)

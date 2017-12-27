@@ -2,35 +2,51 @@ package uk.me.chrs.slitherlink
 
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
+  def isInvalid: Boolean = {
+    hasDeadEnd || hasBranch
+  }
+
+  private def hasBranch = {
+    countLinesFromPoints(assumeFilled = false).exists(n => n > 2)
+  }
+
+  private def hasDeadEnd = {
+    countLinesFromPoints(assumeFilled = true).contains(1)
+  }
+
+  private def countLinesFromPoints(assumeFilled: Boolean) = {
+    board.points.map(p => board.segmentsFor(p).map(s => segmentStates(s)))
+      .map(s => s.count(_.getOrElse(assumeFilled)))
+  }
+
   override def toString: String = {
-    def points(row: Int): String = {
-      horizontals(row).map(makeSegmentString("_", _))
-        .mkString(".", ".", ".\n")
-    }
-
-    def squares(row: Int): String = {
-      val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
-      val verts = verticals(row).map(makeSegmentString("|", _))
-      intersperse(verts, values).mkString
-    }
-
     val s = new StringBuilder
     for (r <- 0 until board.height){
-      s.append(points(r))
-      s.append(squares(r))
+      s.append(makeLineString(r))
+      s.append(makeSquaresString(r))
     }
-    s.append(points(board.height))
+    s.append(makeLineString(board.height))
     s.toString()
+  }
+
+  private def makeLineString(row: Int): String = {
+    horizontalSeqments(row).map(makeSegmentString("_", _)) .mkString(".", ".", ".\n")
+  }
+
+  def makeSquaresString(row: Int): String = {
+    val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
+    val verts = verticalSegments(row).map(makeSegmentString("|", _))
+    intersperse(verts, values).mkString
   }
 
   private def makeSegmentString(str: String, s: Segment) = if (segmentStates(s).contains(true)) str else " "
 
-  private def verticals(row: Int) = {
+  private def verticalSegments(row: Int) = {
     board.segments.filter(s => s.points.exists(_.x == row) && s.points.exists(_.x == row + 1)).toSeq
       .sortBy(_.points.head.y)
   }
 
-  private def horizontals(row: Int) = {
+  private def horizontalSeqments(row: Int) = {
     board.segments.filter(s => s.points.forall(_.x == row)).toSeq
       .sortBy(_.points.head.y)
   }
