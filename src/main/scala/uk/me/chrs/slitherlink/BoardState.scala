@@ -3,20 +3,7 @@ package uk.me.chrs.slitherlink
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
   def isInvalid: Boolean = {
-    hasDeadEnd || hasBranch
-  }
-
-  private def hasBranch = {
-    countLinesFromPoints(assumeFilled = false).exists(n => n > 2)
-  }
-
-  private def hasDeadEnd = {
-    countLinesFromPoints(assumeFilled = true).contains(1)
-  }
-
-  private def countLinesFromPoints(assumeFilled: Boolean) = {
-    board.points.map(p => board.segmentsFor(p).map(s => segmentStates(s)))
-      .map(s => s.count(_.getOrElse(assumeFilled)))
+    hasDeadEnd || hasBranch || cannotMakeTarget
   }
 
   override def toString: String = {
@@ -27,6 +14,35 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     }
     s.append(makeLineString(board.height))
     s.toString()
+  }
+
+  private def cannotMakeTarget = {
+    val tuples = linesRoundSquares(true)
+    tuples.exists{
+      case (sq: Square, count: Int) => sq.target.exists(n => n > count)
+    }
+  }
+
+  private def linesRoundSquares(assumeFilled: Boolean): Set[(Square, Int)] = {
+    board.squares.map(sq => sq -> {
+      board.segmentsFor(sq)
+        .map(s => segmentStates(s))
+        .count(_.getOrElse(assumeFilled))
+    })
+  }
+
+  private def hasBranch: Boolean = {
+    countLinesFromPoints(assumeFilled = false).exists(n => n > 2)
+  }
+
+  private def hasDeadEnd: Boolean = {
+    countLinesFromPoints(assumeFilled = true).contains(1)
+  }
+
+  private def countLinesFromPoints(assumeFilled: Boolean): Set[Int] = {
+    board.points.map(p => board.segmentsFor(p)
+      .map(s => segmentStates(s)))
+      .map(s => s.count(_.getOrElse(assumeFilled)))
   }
 
   private def makeLineString(row: Int): String = {
