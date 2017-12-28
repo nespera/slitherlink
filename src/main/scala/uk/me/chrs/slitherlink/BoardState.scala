@@ -18,6 +18,12 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     isFilled && !isInvalid && isContinuous
   }
 
+  def nextSegment: Option[Segment] = {
+    segmentStates.collect {
+      case(s: Segment, None) => s
+    }.headOption
+  }
+
   override def toString: String = {
     val s = new StringBuilder
     for (r <- 0 until board.height){
@@ -105,7 +111,11 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   def updated(a: Point, b: Point, state: Option[Boolean]): BoardState = {
-    new BoardState(board, segmentStates.updated(Segment(a, b), state))
+    updated(Segment(a, b), state)
+  }
+
+  def updated(segment: Segment, state: Option[Boolean]) : BoardState = {
+    new BoardState(board, segmentStates.updated(segment, state))
   }
 
   private def intersperse(l1: Seq[String], l2: Seq[String]) = l1.zip(l2) flatMap { case (a, b) => Seq(a, b) }
