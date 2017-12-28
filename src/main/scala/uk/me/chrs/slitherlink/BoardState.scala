@@ -11,7 +11,7 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   def isSolved: Boolean = {
-    isFilled && !isInvalid
+    isFilled && !isInvalid && isContinuous
   }
 
   override def toString: String = {
@@ -22,6 +22,26 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     }
     s.append(makeLineString(board.height))
     s.toString()
+  }
+
+  private def isContinuous: Boolean = {
+    val filledSegments = segmentStates.collect {
+      case(s: Segment, Some(true)) => s
+    }
+    val firstLoop: Set[Point] = filledSegments.headOption.toSet.flatMap{ seg: Segment =>
+      expandPoints(seg.points, filledSegments)
+    }
+    val allPoints: Set[Point] = filledSegments.flatMap(_.points).toSet
+    firstLoop.size == allPoints.size
+  }
+
+  private def expandPoints(points: Set[Point], segments: Iterable[Segment]): Set[Point] = {
+    val expanded = segments.filter(s => s.points.intersect(points).nonEmpty).flatMap(_.points).toSet
+    if (expanded.size == points.size) {
+      points
+    } else {
+      expandPoints(expanded, segments)
+    }
   }
 
   private def cannotMakeTarget = {

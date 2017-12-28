@@ -81,7 +81,24 @@ class BoardStateSpec extends Specification {
       unsolved.isSolved must beFalse
     }
 
-    "be solved when filled and valid" in {
+    "be unsolved when filled, valid but not continuous" in {
+      val unsolved = BoardState.empty(1,3,".2.")
+        .updated(Point(0,0), Point(0,1), Some(true))
+        .updated(Point(0,1), Point(0,2), Some(false))
+        .updated(Point(0,2), Point(0,3), Some(true))
+        .updated(Point(0,0), Point(1,0), Some(true))
+        .updated(Point(0,1), Point(1,1), Some(true))
+        .updated(Point(0,2), Point(1,2), Some(true))
+        .updated(Point(0,3), Point(1,3), Some(true))
+        .updated(Point(1,0), Point(1,1), Some(true))
+        .updated(Point(1,1), Point(1,2), Some(false))
+        .updated(Point(1,2), Point(1,3), Some(true))
+      unsolved.isFilled must beTrue
+      unsolved.isInvalid must beFalse
+      unsolved.isSolved must beFalse
+    }
+
+    "be solved when filled, valid and continuous" in {
       val solved = BoardState.empty(1,2,"3.")
         .updated(Point(0,0), Point(0,1), Some(true))
         .updated(Point(0,1), Point(0,2), Some(true))
