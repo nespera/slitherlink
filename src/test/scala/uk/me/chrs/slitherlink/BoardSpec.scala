@@ -6,7 +6,7 @@ class BoardSpec extends Specification {
 
   "A board" should {
 
-    "have targets for all its squares" in {
+    "have a target strings for all its squares" in {
       new Board(1, 1, "") must throwAn[IllegalArgumentException]
     }
 
