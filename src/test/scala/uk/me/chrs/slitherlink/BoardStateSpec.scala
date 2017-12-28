@@ -8,14 +8,14 @@ class BoardStateSpec extends Specification {
     val state = BoardState.empty(2, 3, ".12..3")
 
     "be convertible to string with no filled segments" in {
-      state.toString mustEqual ". . . .\n   1 2 \n. . . .\n     3 \n. . . .\n"
+      state.toString mustEqual "+ + + +\n   1 2 \n+ + + +\n     3 \n+ + + +\n"
     }
 
     "be convertible to string with filled segments" in {
       state.updated(Point(0, 0), Point(0, 1), Some(true))
         .updated(Point(0, 0), Point(1, 0), Some(true))
         .updated(Point(1, 1), Point(1, 2), Some(false))
-        .toString mustEqual "._. . .\n|  1 2 \n. . . .\n     3 \n. . . .\n"
+        .toString mustEqual "+-+ + +\n|  1 2 \n+ + + +\n     3 \n+ + + +\n"
     }
 
     "not be invalid with no filled segments" in {
@@ -61,6 +61,9 @@ class BoardStateSpec extends Specification {
     }
 
     "be unsolved when filled and targets are not met" in {
+//    +-+
+//    |3|
+//    +-+
       val unsolved = BoardState.empty(1,1,"3")
         .updated(Point(0,0), Point(0,1), Some(true))
         .updated(Point(0,1), Point(1,1), Some(true))
@@ -71,17 +74,23 @@ class BoardStateSpec extends Specification {
     }
 
     "be unsolved when filled and has dead ends" in {
+//    +-+
+//    |3
+//    +-+
       val unsolved = BoardState.empty(1,1,"3")
         .updated(Point(0,0), Point(0,1), Some(true))
         .updated(Point(0,1), Point(1,1), Some(false))
         .updated(Point(1,1), Point(1,0), Some(true))
-        .updated(Point(1,0), Point(0,0), Some(false))
+        .updated(Point(1,0), Point(0,0), Some(true))
       unsolved.isFilled must beTrue
       unsolved.isInvalid must beTrue
       unsolved.isSolved must beFalse
     }
 
     "be unsolved when filled, valid but not continuous" in {
+//    +-+ +-+
+//    | |2| |
+//    +-+ +-+
       val unsolved = BoardState.empty(1,3,".2.")
         .updated(Point(0,0), Point(0,1), Some(true))
         .updated(Point(0,1), Point(0,2), Some(false))
@@ -99,6 +108,9 @@ class BoardStateSpec extends Specification {
     }
 
     "be solved when filled, valid and continuous" in {
+//    +-+-+
+//    |3  |
+//    +-+-+
       val solved = BoardState.empty(1,2,"3.")
         .updated(Point(0,0), Point(0,1), Some(true))
         .updated(Point(0,1), Point(0,2), Some(true))
@@ -107,7 +119,6 @@ class BoardStateSpec extends Specification {
         .updated(Point(0,2), Point(1,2), Some(true))
         .updated(Point(1,0), Point(1,1), Some(true))
         .updated(Point(1,1), Point(1,2), Some(true))
-      println(solved)
       solved.isFilled must beTrue
       solved.isInvalid must beFalse
       solved.isSolved must beTrue

@@ -2,6 +2,10 @@ package uk.me.chrs.slitherlink
 
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
+  private val POINT = "+"
+  private val HORIZ = "-"
+  private val VERT  = "|"
+
   def isInvalid: Boolean = {
     hasDeadEnd || hasBranch || cannotMakeTarget || exceededTarget
   }
@@ -79,12 +83,12 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def makeLineString(row: Int): String = {
-    horizontalSeqments(row).map(makeSegmentString("_", _)) .mkString(".", ".", ".\n")
+    horizontalSeqments(row).map(makeSegmentString(HORIZ, _)) .mkString(POINT, POINT, POINT + "\n")
   }
 
   def makeSquaresString(row: Int): String = {
     val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
-    val verts = verticalSegments(row).map(makeSegmentString("|", _))
+    val verts = verticalSegments(row).map(makeSegmentString(VERT, _))
     intersperse(verts, values).mkString
   }
 
