@@ -60,5 +60,42 @@ class BoardStateSpec extends Specification {
         .updated(Point(1,0), Point(0,0), Some(false)).isFilled must beTrue
     }
 
+    "be unsolved when filled and targets are not met" in {
+      val unsolved = BoardState.empty(1,1,"3")
+        .updated(Point(0,0), Point(0,1), Some(true))
+        .updated(Point(0,1), Point(1,1), Some(true))
+        .updated(Point(1,1), Point(1,0), Some(true))
+        .updated(Point(1,0), Point(0,0), Some(true))
+      unsolved.isFilled must beTrue
+      unsolved.isSolved must beFalse
+    }
+
+    "be unsolved when filled and has dead ends" in {
+      val unsolved = BoardState.empty(1,1,"3")
+        .updated(Point(0,0), Point(0,1), Some(true))
+        .updated(Point(0,1), Point(1,1), Some(false))
+        .updated(Point(1,1), Point(1,0), Some(true))
+        .updated(Point(1,0), Point(0,0), Some(false))
+      unsolved.isFilled must beTrue
+      unsolved.isInvalid must beTrue
+      unsolved.isSolved must beFalse
+    }
+
+    "be solved when filled and valid" in {
+      val solved = BoardState.empty(1,2,"3.")
+        .updated(Point(0,0), Point(0,1), Some(true))
+        .updated(Point(0,1), Point(0,2), Some(true))
+        .updated(Point(0,0), Point(1,0), Some(true))
+        .updated(Point(0,1), Point(1,1), Some(false))
+        .updated(Point(0,2), Point(1,2), Some(true))
+        .updated(Point(1,0), Point(1,1), Some(true))
+        .updated(Point(1,1), Point(1,2), Some(true))
+      println(solved)
+      solved.isFilled must beTrue
+      solved.isInvalid must beFalse
+      solved.isSolved must beTrue
+    }
+
+
   }
 }

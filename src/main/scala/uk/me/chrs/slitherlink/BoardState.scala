@@ -10,6 +10,10 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     segmentStates.values.forall(_.isDefined)
   }
 
+  def isSolved: Boolean = {
+    isFilled && !isInvalid
+  }
+
   override def toString: String = {
     val s = new StringBuilder
     for (r <- 0 until board.height){

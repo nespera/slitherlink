@@ -12,7 +12,7 @@ package uk.me.chrs.slitherlink
 
 class Board(val height: Int, val width: Int, targets: String) {
 
-  if(targets.length != width * height) throw new IllegalArgumentException(s"Targets is of length ${targets.length}, expected ${width * height}")
+  if(targets.length != width * height) throw new IllegalArgumentException(s"Targets string is of length ${targets.length}, expected ${width * height}")
   val squares: Set[Square] = (for { x <- 0 until height; y <- 0 until width } yield Square(x, y, targetAt(x,y))).toSet
   val points: Set[Point] = (for { x <- 0 to height; y <- 0 to width } yield Point(x, y)).toSet
   val segments: Set[Segment] = points.flatMap(p => points.filter(p.adjacent).map(Segment(p, _)))
