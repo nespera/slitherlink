@@ -47,5 +47,18 @@ class BoardStateSpec extends Specification {
         .isInvalid must beTrue
     }
 
+    "be unfilled when there segments are still undecided" in {
+      state.isFilled must beFalse
+      state.updated(Point(0, 1), Point(0, 2), Some(true)).isFilled must beFalse
+    }
+
+    "be filled when all segments are decided" in {
+      BoardState.empty(1,1,".")
+        .updated(Point(0,0), Point(0,1), Some(true))
+        .updated(Point(0,1), Point(1,1), Some(false))
+        .updated(Point(1,1), Point(1,0), Some(true))
+        .updated(Point(1,0), Point(0,0), Some(false)).isFilled must beTrue
+    }
+
   }
 }

@@ -6,6 +6,10 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     hasDeadEnd || hasBranch || cannotMakeTarget || exceededTarget
   }
 
+  def isFilled: Boolean = {
+    segmentStates.values.forall(_.isDefined)
+  }
+
   override def toString: String = {
     val s = new StringBuilder
     for (r <- 0 until board.height){
@@ -17,13 +21,13 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def cannotMakeTarget = {
-    linesRoundSquares(true).exists{
+    linesRoundSquares(assumeFilled = true).exists{
       case (sq: Square, maxPossible: Int) => sq.target.exists(targetValue => targetValue > maxPossible)
     }
   }
 
   private def exceededTarget = {
-    linesRoundSquares(false).exists{
+    linesRoundSquares(assumeFilled = false).exists{
       case (sq: Square, minPossible: Int) => sq.target.exists(targetValue => minPossible > targetValue)
     }
   }
