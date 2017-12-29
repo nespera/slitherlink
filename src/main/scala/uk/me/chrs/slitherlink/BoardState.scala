@@ -89,7 +89,7 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def makeLineString(row: Int): String = {
-    horizontalSeqments(row).map(makeSegmentString(HORIZ, _)) .mkString(POINT, POINT, POINT + "\n")
+    horizontalSegments(row).map(makeSegmentString(HORIZ, _)) .mkString(POINT, POINT, POINT + "\n")
   }
 
   def makeSquaresString(row: Int): String = {
@@ -105,9 +105,9 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
       .sortBy(_.points.head.y)
   }
 
-  private def horizontalSeqments(row: Int) = {
+  private def horizontalSegments(row: Int) = {
     board.segments.filter(s => s.points.forall(_.x == row)).toSeq
-      .sortBy(_.points.head.y)
+      .sortBy(_.points.map(_.y).max)
   }
 
   def updated(a: Point, b: Point, state: Option[Boolean]): BoardState = {
