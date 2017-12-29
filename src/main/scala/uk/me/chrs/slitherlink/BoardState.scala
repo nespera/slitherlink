@@ -28,6 +28,19 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
 
   def debugString: String = stringRepresentation(emptyMarker = "x")
 
+  def updated(a: Point, b: Point, state: Option[Boolean]): BoardState = {
+    updated(Segment(a, b), state)
+  }
+
+  def updated(segment: Segment, state: Option[Boolean]) : BoardState = {
+    new BoardState(board, segmentStates.updated(segment, state))
+  }
+
+  def markAllZeroes: BoardState = {
+    val zeroSegments: Set[Segment] = board.squares.filter(sq => sq.target.contains(0)).flatMap(board.segmentsFor)
+    zeroSegments.foldLeft(this){case (state: BoardState, segment: Segment) => state.updated(segment, Some(false))}
+  }
+
   private def stringRepresentation(emptyMarker: String) = {
     val s = new StringBuilder
     for (r <- 0 until board.height) {
@@ -95,7 +108,7 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     horizontalSegments(row).map(makeSegmentString(HORIZ, emptyMarker, _)) .mkString(POINT, POINT, POINT + "\n")
   }
 
-  def makeSquaresString(row: Int, emptyMarker: String): String = {
+  private def makeSquaresString(row: Int, emptyMarker: String): String = {
     val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
     val verts = verticalSegments(row).map(makeSegmentString(VERT, emptyMarker, _))
     intersperse(verts, values).mkString
@@ -117,14 +130,6 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   private def horizontalSegments(row: Int) = {
     board.segments.filter(s => s.points.forall(_.x == row)).toSeq
       .sortBy(_.points.map(_.y).max)
-  }
-
-  def updated(a: Point, b: Point, state: Option[Boolean]): BoardState = {
-    updated(Segment(a, b), state)
-  }
-
-  def updated(segment: Segment, state: Option[Boolean]) : BoardState = {
-    new BoardState(board, segmentStates.updated(segment, state))
   }
 
   private def intersperse(l1: Seq[String], l2: Seq[String]) = l1.zip(l2) flatMap { case (a, b) => Seq(a, b) }

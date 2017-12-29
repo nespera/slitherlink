@@ -11,7 +11,7 @@ object Game extends App {
     val targets = args(2)
     val state = BoardState.empty(height, width, targets)
     println(s"solving\n\n$state\n\n")
-    solve(state) match {
+    solve(state.markAllZeroes) match {
       case Some(endState) => println(endState)
       case None => "Cannot find a solution"
     }
