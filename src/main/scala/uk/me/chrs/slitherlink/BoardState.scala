@@ -2,8 +2,8 @@ package uk.me.chrs.slitherlink
 
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
-  private val POINT = "+"
-  private val HORIZ = "-"
+  private val POINT = "\u2022"
+  private val HORIZ = "\u2012"
   private val VERT  = "|"
 
   def isInvalid: Boolean = {
@@ -21,7 +21,7 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   def nextSegment: Option[Segment] = {
     segmentStates.collect {
       case(s: Segment, None) => s
-    }.headOption
+    }.toSeq.sortBy(_.points.map(_.x).max).headOption
   }
 
   override def toString: String = stringRepresentation(emptyMarker = " ")
