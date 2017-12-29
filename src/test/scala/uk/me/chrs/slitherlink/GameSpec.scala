@@ -16,9 +16,9 @@ class GameSpec extends Specification {
       val solved = Game.solve(state)
       solved must beSome
       solved.get.toString.trim mustEqual
-        """>•‒•‒•
-           >|3  |
-           >•‒•‒•""".stripMargin('>')
+        """>•‒‒•‒‒•
+           >| 3   |
+           >•‒‒•‒‒•""".stripMargin('>')
     }
 
     "find a solution for a small problem" in {
@@ -26,9 +26,9 @@ class GameSpec extends Specification {
       val solved = Game.solve(state)
       solved must beSome
       solved.get.toString.trim mustEqual
-        """>• •‒•‒•
-           >  |3 3|
-           >• •‒•‒•""".stripMargin('>')
+        """>•  •‒‒•‒‒•
+           >   | 3  3|
+           >•  •‒‒•‒‒•""".stripMargin('>')
     }
 
     "find a solution for a smallish problem" in {
@@ -36,13 +36,13 @@ class GameSpec extends Specification {
       val solved = Game.solve(state)
       solved must beSome
       solved.get.toString.trim mustEqual
-        "• •‒• •\n"+
-        "  | |  \n"+
-        "•‒• •‒•\n"+
-        "|3 0 3|\n"+
-        "•‒• •‒•\n"+
-        "  | |  \n"+
-        "• •‒• •"
+        "•  •‒‒•  •\n"+
+        "   |  |   \n"+
+        "•‒‒•  •‒‒•\n"+
+        "| 3  0  3|\n"+
+        "•‒‒•  •‒‒•\n"+
+        "   |  |   \n"+
+        "•  •‒‒•  •"
     }
   }
 

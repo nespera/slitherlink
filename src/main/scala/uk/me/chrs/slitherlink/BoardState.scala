@@ -2,8 +2,8 @@ package uk.me.chrs.slitherlink
 
 class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]]) {
 
-  private val POINT = "\u2022"
-  private val HORIZ = "\u2012"
+  private val POINT = "•"
+  private val HORIZ = "‒"
   private val VERT  = "|"
 
   def isInvalid: Boolean = {
@@ -105,20 +105,20 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def makeLineString(row: Int, emptyMarker: String): String = {
-    horizontalSegments(row).map(makeSegmentString(HORIZ, emptyMarker, _)) .mkString(POINT, POINT, POINT + "\n")
+    horizontalSegments(row).map(makeSegmentString(HORIZ + HORIZ, emptyMarker + emptyMarker, "  ", _)) .mkString(POINT, POINT, POINT + "\n")
   }
 
   private def makeSquaresString(row: Int, emptyMarker: String): String = {
-    val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
-    val verts = verticalSegments(row).map(makeSegmentString(VERT, emptyMarker, _))
+    val values = board.getRow(row).map(s => " " + s.target.map(_.toString).getOrElse(" ")) :+ "\n"
+    val verts = verticalSegments(row).map(makeSegmentString(VERT, emptyMarker, " ", _))
     intersperse(verts, values).mkString
   }
 
-  private def makeSegmentString(filledMarker: String, emptyMarker: String,  s: Segment) = {
+  private def makeSegmentString(filledMarker: String, emptyMarker: String,  undecidedMarker: String, s: Segment) = {
     segmentStates(s) match {
       case Some(true) => filledMarker
       case Some(false) => emptyMarker
-      case None => " "
+      case None => undecidedMarker
     }
   }
 
