@@ -14,16 +14,25 @@ class BoardStateSpec extends Specification {
 //  •  •  •  •
 
     "be convertible to string with no filled segments" in {
-      state.toString mustEqual "•  •  •  •\n     1  2 \n•  •  •  •\n        3 \n•  •  •  •\n"
+      state.toString mustEqual
+        "•  •  •  •\n" +
+        "     1  2 \n" +
+        "•  •  •  •\n" +
+        "        3 \n" +
+        "•  •  •  •\n"
     }
 
     "be convertible to string with filled segments" in {
       state.updated(Point(0, 0), Point(0, 1), Some(true))
         .updated(Point(0, 0), Point(1, 0), Some(true))
         .updated(Point(1, 1), Point(1, 2), Some(false))
-        .toString mustEqual "•‒‒•  •  •\n|    1  2 \n•  •  •  •\n        3 \n•  •  •  •\n"
+        .toString mustEqual
+          "•‒‒•  •  •\n" +
+          "|    1  2 \n" +
+          "•  •  •  •\n" +
+          "        3 \n" +
+          "•  •  •  •\n"
     }
-
 
     "not be invalid with no filled segments" in {
       state.isInvalid must beFalse
@@ -136,6 +145,14 @@ class BoardStateSpec extends Specification {
       solved.isSolved must beTrue
     }
 
+    "mark segments round zero targets as unfilled" in {
+      val state2 = BoardState.empty(1, 3, ".03")
+      state2.markAllZeroes.debugString mustEqual
+          "•  •xx•  •\n" +
+          "   x 0x 3 \n" +
+          "•  •xx•  •\n"
+
+    }
 
   }
 }
