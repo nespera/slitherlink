@@ -7,6 +7,12 @@ class BoardStateSpec extends Specification {
   "A board state" should {
     val state = BoardState.empty(2, 3, ".12..3")
 
+//  + + + +
+//     1 2
+//  + + + +
+//       3
+//  + + + +
+
     "be convertible to string with no filled segments" in {
       state.toString mustEqual "+ + + +\n   1 2 \n+ + + +\n     3 \n+ + + +\n"
     }
@@ -18,8 +24,14 @@ class BoardStateSpec extends Specification {
         .toString mustEqual "+-+ + +\n|  1 2 \n+ + + +\n     3 \n+ + + +\n"
     }
 
+
     "not be invalid with no filled segments" in {
       state.isInvalid must beFalse
+    }
+
+    "not be invalid when we have a point with one empty and one undecided segment" in {
+      val state2 = BoardState.empty(1,3,".33").updated(Point(0,0), Point(0,1), Some(false))
+      state2.isInvalid must beFalse
     }
 
     "be invalid when a line ends at a point" in {

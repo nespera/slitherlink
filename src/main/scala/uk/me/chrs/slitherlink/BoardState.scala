@@ -24,13 +24,17 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
     }.headOption
   }
 
-  override def toString: String = {
+  override def toString: String = stringRepresentation(emptyMarker = " ")
+
+  def debugString: String = stringRepresentation(emptyMarker = "x")
+
+  private def stringRepresentation(emptyMarker: String) = {
     val s = new StringBuilder
-    for (r <- 0 until board.height){
-      s.append(makeLineString(r))
-      s.append(makeSquaresString(r))
+    for (r <- 0 until board.height) {
+      s.append(makeLineString(r, emptyMarker))
+      s.append(makeSquaresString(r, emptyMarker))
     }
-    s.append(makeLineString(board.height))
+    s.append(makeLineString(board.height, emptyMarker))
     s.toString()
   }
 
@@ -75,30 +79,35 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   }
 
   private def hasBranch: Boolean = {
-    countLinesFromPoints(assumeFilled = false).exists(n => n > 2)
+    board.points.map(p => board.segmentsFor(p).map(s => segmentStates(s)))
+      .map(s => s.count(_.getOrElse(false)))
+      .exists(n => n > 2)
   }
 
   private def hasDeadEnd: Boolean = {
-    countLinesFromPoints(assumeFilled = true).contains(1)
+    board.points.map(p => board.segmentsFor(p).map(s => segmentStates(s)))
+      .filter(s => s.forall(_.isDefined))
+      .map(s => s.count(_.get == true))
+      .contains(1)
   }
 
-  private def countLinesFromPoints(assumeFilled: Boolean): Set[Int] = {
-    board.points.map(p => board.segmentsFor(p)
-      .map(s => segmentStates(s)))
-      .map(s => s.count(_.getOrElse(assumeFilled)))
+  private def makeLineString(row: Int, emptyMarker: String): String = {
+    horizontalSegments(row).map(makeSegmentString(HORIZ, emptyMarker, _)) .mkString(POINT, POINT, POINT + "\n")
   }
 
-  private def makeLineString(row: Int): String = {
-    horizontalSegments(row).map(makeSegmentString(HORIZ, _)) .mkString(POINT, POINT, POINT + "\n")
-  }
-
-  def makeSquaresString(row: Int): String = {
+  def makeSquaresString(row: Int, emptyMarker: String): String = {
     val values = board.getRow(row).map(s => s.target.map(_.toString).getOrElse(" ")) :+ "\n"
-    val verts = verticalSegments(row).map(makeSegmentString(VERT, _))
+    val verts = verticalSegments(row).map(makeSegmentString(VERT, emptyMarker, _))
     intersperse(verts, values).mkString
   }
 
-  private def makeSegmentString(str: String, s: Segment) = if (segmentStates(s).contains(true)) str else " "
+  private def makeSegmentString(filledMarker: String, emptyMarker: String,  s: Segment) = {
+    segmentStates(s) match {
+      case Some(true) => filledMarker
+      case Some(false) => emptyMarker
+      case None => " "
+    }
+  }
 
   private def verticalSegments(row: Int) = {
     board.segments.filter(s => s.points.exists(_.x == row) && s.points.exists(_.x == row + 1)).toSeq
