@@ -21,7 +21,7 @@ class BoardState(val board: Board, segmentStates: Map[Segment, Option[Boolean]])
   def nextSegment: Option[Segment] = {
     segmentStates.collect {
       case(s: Segment, None) => s
-    }.toSeq.sortBy(_.points.map(_.x).max).headOption
+    }.toSeq.sortBy(s => s.points.map(_.x).max -> s.points.map(_.y).max).headOption
   }
 
   override def toString: String = stringRepresentation(emptyMarker = " ")
